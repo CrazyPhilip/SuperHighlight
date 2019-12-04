@@ -1,0 +1,78 @@
+﻿<Window x:Class="SuperHighlight.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SuperHighlight"
+        xmlns:controls="clr-namespace:SuperHighlight.Controls"
+        mc:Ignorable="d"
+        Title="SuperHighlight" Height="450" Width="800" MinHeight="450" MinWidth="800">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="5*"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+        <!--选择语言-->
+        <ComboBox Grid.Row="0" Grid.Column="0" Width="100" Height="30" HorizontalAlignment="Left" Margin="20,0" 
+                  VerticalContentAlignment="Center" ItemsSource="{Binding LanguageList}" SelectedItem="{Binding SelectedLanguage}"/>
+
+        <!--选择原始文件夹-->
+        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
+            <Label Content="选择文件夹：" VerticalAlignment="Center"/>
+            <TextBox Height="30" Width="300" IsReadOnly="True" Text="{Binding InputFolderPath}" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+            <Button Height="30" Width="50" Content="选择" VerticalAlignment="Center" Command="{Binding InputFolderCommand}"/>
+            <Button Height="30" Width="50" Content="打开" VerticalAlignment="Center" Command="{Binding OpenInputFolderCommand}"/>
+        </StackPanel>
+
+        <!--文件列表-->
+        <DataGrid Grid.Row="2" Grid.Column="0" Grid.RowSpan="2" ItemsSource="{Binding FileList}" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridCheckBoxColumn Width="30" Binding="{Binding Selected}"/>
+                <DataGridTextColumn Header="文件名" Width="200" Binding="{Binding FileName}"/>
+                <DataGridTextColumn Header="文件大小" Width="100" Binding="{Binding Size}"/>
+                <DataGridTextColumn Header="修改时间" Width="100" Binding="{Binding EditTime}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!--选择输出文件夹-->
+        <StackPanel Grid.Row="4" Grid.Column="0" Orientation="Horizontal">
+            <Label Content="输出文件夹：" VerticalAlignment="Center"/>
+            <TextBox Height="30" Width="300" IsReadOnly="True" Text="{Binding OutputFolderPath}" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+            <Button Height="30" Width="50" Content="选择" VerticalAlignment="Center" Command="{Binding OutputFolderCommand}"/>
+            <Button Height="30" Width="50" Content="打开" VerticalAlignment="Center" Command="{Binding OpenOutputFolderCommand}"/>
+        </StackPanel>
+
+        <!--选择字体-->
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+            <Label Content="字体：" VerticalAlignment="Center"/>
+            <ComboBox VerticalAlignment="Center" Width="100" Height="30" VerticalContentAlignment="Center" ItemsSource="{Binding FontList}" SelectedItem="{Binding SelectedFont}"/>
+        </StackPanel>
+
+        <!--选择字号-->
+        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+            <Label Content="字号：" VerticalAlignment="Center"/>
+            <ComboBox VerticalAlignment="Center" Width="100" Height="30" VerticalContentAlignment="Center" ItemsSource="{Binding FontSizeList}" SelectedItem="{Binding SelectedFontSize}"/>
+        </StackPanel>
+
+        <!--选择主题-->
+        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
+            <Label Content="主题：" VerticalAlignment="Center"/>
+            <controls:ComboBoxWithCommand VerticalAlignment="Center" Width="100" Height="30" VerticalContentAlignment="Center" 
+                      ItemsSource="{Binding ThemeList}" SelectedItem="{Binding SelectedTheme}" Command="{Binding SelectThemeCommand}"/>
+        </StackPanel>
+
+        <Image Grid.Column="1" Grid.Row="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Source="{Binding ThemeImage}"/>
+
+        <Button Grid.Column="1" Grid.Row="4" Content="生成" Width="50" Height="30" Command="{Binding GenerateCommand}"/>
+
+    </Grid>
+</Window>
