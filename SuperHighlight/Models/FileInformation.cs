@@ -21,6 +21,9 @@ namespace SuperHighlight.Models
         [JsonProperty("EditTime")]
         public string EditTime { get; set; }   //修改时间
 
+        [JsonProperty("FullPath")]
+        public string FullPath { get; set; }   //文件夹
+
 
     }
 }

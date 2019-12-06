@@ -5,6 +5,7 @@ using SuperHighlight.Commands;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.IO;
+using SuperHighlight.Exporters;
 
 namespace SuperHighlight.ViewModels
 {
@@ -59,8 +60,8 @@ namespace SuperHighlight.ViewModels
             set { SetProperty(ref selectedFont, value); }
         }
 
-        private string selectedFontSize;   //选择的字号
-        public string SelectedFontSize
+        private int selectedFontSize;   //选择的字号
+        public int SelectedFontSize
         {
             get { return selectedFontSize; }
             set { SetProperty(ref selectedFontSize, value); }
@@ -134,6 +135,11 @@ namespace SuperHighlight.ViewModels
                 new FileInformation{Selected=false, FileName="graph2.py", Size="15kb"}
             };
 
+            SelectedFont = "Consolas";
+            SelectedLanguage = "Python";
+            SelectedFontSize = 12;
+            SelectedTheme = "Dark";
+
             InputFolderCommand = new Command(() =>
             {
                 FolderBrowserDialog openFileDialog = new FolderBrowserDialog();  //选择文件夹
@@ -155,13 +161,13 @@ namespace SuperHighlight.ViewModels
                             FileName = NextFile.Name,
                             EditTime = NextFile.LastWriteTime.ToString(),
                             Size = NextFile.Length.ToString(),
+                            FullPath = NextFile.DirectoryName
                         };
 
                         list.Add(temp);
                     }
 
-                    FileList = list;
-                    /*  暂时不包含子文件夹
+                    //  暂时不包含子文件夹
                     //遍历子文件夹
                     DirectoryInfo[] dirInfo = theFolder.GetDirectories();
                     foreach (DirectoryInfo NextFolder in dirInfo)
@@ -170,10 +176,20 @@ namespace SuperHighlight.ViewModels
                         FileInfo[] fileInfo = NextFolder.GetFiles("*.py", SearchOption.AllDirectories);
                         foreach (FileInfo NextFile in fileInfo) //遍历文件
                         {
-                            list.Add(NextFile.FullName);
-                        }
-                    }*/
+                            temp = new FileInformation
+                            {
+                                Selected = true,
+                                FileName = NextFile.Name,
+                                EditTime = NextFile.LastWriteTime.ToString(),
+                                Size = NextFile.Length.ToString(),
+                                FullPath = NextFile.DirectoryName
+                            };
 
+                            list.Add(temp);
+                        }
+                    }
+
+                    FileList = list;
                 }
             }, () => { return true; });
 
@@ -201,9 +217,20 @@ namespace SuperHighlight.ViewModels
 
             GenerateCommand = new Command(() =>
             {
-                Console.WriteLine(SelectedFont);
-                Console.WriteLine(SelectedFontSize);
-                Console.WriteLine(SelectedTheme);
+                if (SelectedLanguage == "Python")
+                {
+                    PythonExporter pythonExporter = new PythonExporter();
+
+                    foreach (var file in FileList)
+                    {
+                        if (file.Selected)
+                        {
+                            pythonExporter.PythonToHtmlDark(file.FullPath + "\\" + file.FileName, OutputFolderPath + "\\" + file.FileName.Split('.')[0] + ".html", "", "");
+                        }
+                    }
+                    
+                }
+                
             }, () => { return true; });
 
             SelectThemeCommand = new Command(() =>

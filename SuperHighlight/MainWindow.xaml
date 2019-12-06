@@ -40,6 +40,7 @@
                 <DataGridTextColumn Header="文件名" Width="200" Binding="{Binding FileName}"/>
                 <DataGridTextColumn Header="文件大小" Width="100" Binding="{Binding Size}"/>
                 <DataGridTextColumn Header="修改时间" Width="100" Binding="{Binding EditTime}"/>
+                <DataGridTextColumn Header="文件夹" Width="100" Binding="{Binding FullPath}"/>
             </DataGrid.Columns>
         </DataGrid>
 

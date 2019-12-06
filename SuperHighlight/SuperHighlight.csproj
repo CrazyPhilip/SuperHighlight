@@ -61,6 +61,7 @@
     </ApplicationDefinition>
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Controls\ComboBoxWithCommand.cs" />
+    <Compile Include="Exporters\PythonExporter.cs" />
     <Compile Include="Models\FileInformation.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Page Include="MainWindow.xaml">
@@ -118,5 +119,6 @@
   <ItemGroup>
     <Resource Include="Themes\Python_Dark.PNG" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
