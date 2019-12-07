@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.IO;
 using SuperHighlight.Exporters;
+using System.Xml;
 
 namespace SuperHighlight.ViewModels
 {
@@ -81,8 +82,6 @@ namespace SuperHighlight.ViewModels
             set { SetProperty(ref themeIamge, value); }
         }
 
-
-
         private string inputFolderPath;   //输入文件夹路径
         public string InputFolderPath
         {
@@ -114,27 +113,13 @@ namespace SuperHighlight.ViewModels
 
         public MainViewModel()
         {
-            LanguageList = new List<string>
-            {
-                "Python", "Java", "C#", "PHP"
-            };
+            LanguageList = new List<string>();
+            ThemeList = new List<string>();
+            FontSizeList = new List<int>();
+            FontList = new List<string>();
 
-            FontSizeList = new List<int> { 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28 };
-
-            FontList = new List<string> { "Consolas", "Courier New" };
-
-            ThemeList = new List<string>
-            {
-                "Dark", "Light"
-            };
-
-            FileList = new List<FileInformation>
-            {
-                new FileInformation{Selected=false, FileName="graph.py", Size="15kb"},
-                new FileInformation{Selected=false, FileName="graph1.py", Size="15kb"},
-                new FileInformation{Selected=false, FileName="graph2.py", Size="15kb"}
-            };
-
+            Init(Application.StartupPath + @"\Configuration\Configuration.xml");
+            
             SelectedFont = "Consolas";
             SelectedLanguage = "Python";
             SelectedFontSize = 12;
@@ -225,7 +210,7 @@ namespace SuperHighlight.ViewModels
                     {
                         if (file.Selected)
                         {
-                            pythonExporter.PythonToHtmlDark(file.FullPath + "\\" + file.FileName, OutputFolderPath + "\\" + file.FileName.Split('.')[0] + ".html", "", "");
+                            //pythonExporter.PythonToHtmlDark(file.FullPath + "\\" + file.FileName, OutputFolderPath + "\\" + file.FileName.Split('.')[0] + ".html", "", "");
                         }
                     }
                     
@@ -238,6 +223,51 @@ namespace SuperHighlight.ViewModels
                 ThemeImage = "/Themes/" + SelectedLanguage + "_" + SelectedTheme + ".PNG";
                 //Console.WriteLine(ThemeImage);
             }, () => { return true; });
+        }
+
+        private void Init(string file)
+        {
+            XmlDocument xmlDocument = new XmlDocument();
+            if (File.Exists(file))
+            {
+                xmlDocument.Load(file);
+
+                XmlNodeList languageList = xmlDocument.SelectNodes("/Configuration/Languages/Language");
+                if (languageList.Count>0)
+                {
+                    foreach (XmlNode item in languageList)
+                    {
+                        LanguageList.Add(item.Attributes["Name"].Value);
+                    }
+                }
+
+                XmlNodeList themeList = xmlDocument.SelectNodes("/Configuration/Themes/Theme");
+                if (themeList.Count>0)
+                {
+                    foreach (XmlNode item in themeList)
+                    {
+                        ThemeList.Add(item.InnerText);
+                    }
+                }
+
+                XmlNodeList fontSizeList = xmlDocument.SelectNodes("/Configuration/FontSizes/FontSize");
+                if (fontSizeList.Count > 0)
+                {
+                    foreach (XmlNode item in fontSizeList)
+                    {
+                        FontSizeList.Add(int.Parse(item.InnerText));
+                    }
+                }
+
+                XmlNodeList fontList = xmlDocument.SelectNodes("/Configuration/Fonts/Font");
+                if (fontList.Count>0)
+                {
+                    foreach (XmlNode item in fontList)
+                    {
+                        FontList.Add(item.InnerText);
+                    }
+                }
+            }
         }
     }
 }
