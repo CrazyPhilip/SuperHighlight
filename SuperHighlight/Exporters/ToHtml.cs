@@ -10,17 +10,18 @@ namespace SuperHighlight.Exporters
     public class ToHtml
     {
         /// <summary>
-        /// 导出Html
+        /// 生成Html
         /// </summary>
-        /// <param name="templatepath">模板文件路径</param>
-        /// <param name="htmlpath">导出html路径</param>
-        /// <param name="dic">参数字典</param>
-        /// <param name="message">异常信息</param>
+        /// <param name="templatepath">模版文件</param>
+        /// <param name="htmlpath">生成的文件目录</param>
+        /// <param name="htmlname">生成的文件名</param>
+        /// <param name="dic">字典</param>
+        /// <param name="message">异常消息</param>
         /// <returns></returns>
-        public bool Create(string templatepath, string htmlpath, Dictionary<string, string> dic, ref string message)
+        public bool Create(string templatepath, string htmlpath, string htmlname, Dictionary<string, string> dic, ref string message)
         {
             bool result = false;
-            //string htmlnamepath = Path.Combine(htmlpath, htmlname);
+            string htmlnamepath = Path.Combine(htmlpath, htmlname);
             Encoding encode = Encoding.UTF8;
             StringBuilder html = new StringBuilder();
 
@@ -48,7 +49,7 @@ namespace SuperHighlight.Exporters
                 //写入html文件
                 if (!Directory.Exists(htmlpath))
                     Directory.CreateDirectory(htmlpath);
-                File.WriteAllText(htmlpath, html.ToString(), encode);
+                File.WriteAllText(htmlnamepath, html.ToString(), encode);
                 result = true;
             }
             catch (IOException ex)

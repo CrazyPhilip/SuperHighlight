@@ -202,20 +202,7 @@ namespace SuperHighlight.ViewModels
 
             GenerateCommand = new Command(() =>
             {
-                if (SelectedLanguage == "Python")
-                {
-                    PythonExporter pythonExporter = new PythonExporter();
-
-                    foreach (var file in FileList)
-                    {
-                        if (file.Selected)
-                        {
-                            //pythonExporter.PythonToHtmlDark(file.FullPath + "\\" + file.FileName, OutputFolderPath + "\\" + file.FileName.Split('.')[0] + ".html", "", "");
-                        }
-                    }
-                    
-                }
-                
+                Distribute();
             }, () => { return true; });
 
             SelectThemeCommand = new Command(() =>
@@ -267,6 +254,34 @@ namespace SuperHighlight.ViewModels
                         FontList.Add(item.InnerText);
                     }
                 }
+            }
+        }
+
+        private void Distribute()
+        {
+            Dictionary<string, string> dic = new Dictionary<string, string>
+            {
+                { "language", SelectedLanguage},
+                { "title", ""},
+                { "font", SelectedFont},
+                { "fontsize", SelectedFontSize.ToString()},
+                { "theme", SelectedTheme},
+                { "content", ""}
+            };
+
+            if (SelectedLanguage == "Python")
+            {
+                PythonExporter pythonExporter = new PythonExporter();
+
+                foreach (var file in FileList)
+                {
+                    if (file.Selected)
+                    {
+                        dic["title"] = file.FileName;
+                        pythonExporter.PythonToHtml(file.FullPath + "\\" + file.FileName, OutputFolderPath, file.FileName + ".html", dic);
+                    }
+                }
+
             }
         }
     }

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace SuperHighlight.Exporters
 {
@@ -15,22 +16,17 @@ namespace SuperHighlight.Exporters
         /// <param name="InputFilePath">Python文件全路径</param>
         /// <param name="OutputFilePath">输出Html文件全路径</param>
         /// <returns></returns>
-        public int PythonToHtmlDark(string InputFilePath, string OutputFilePath, Dictionary<string, string> dic)
+        public int PythonToHtml(string InputFilePath, string OutputFilePath, string OutputFileName, Dictionary<string, string> dic)
         {
-            string template_path = string.Empty;
-
+            string template_path = Application.StartupPath + "\\Themes\\" + dic["language"] + "_" + dic["theme"] + "_template.html";
             ToHtml html = new ToHtml();
             string msg = "";
 
-            dic.Add("content", Export(InputFilePath));
+            //dic.Add("content", Export(InputFilePath));
+            dic["content"] = Export(InputFilePath);
 
-            html.Create(template_path, OutputFilePath, dic, ref msg);
+            html.Create(template_path, OutputFilePath, OutputFileName, dic, ref msg);
 
-            return 1;
-        }
-
-        public int PythonToHtmlLight()
-        {
             return 1;
         }
 
@@ -41,7 +37,7 @@ namespace SuperHighlight.Exporters
         /// </summary>
         /// <param name="ch"></param>
         /// <returns></returns>
-        private int Recognize(char ch)
+        static int Recognize(char ch)
         {
             char[] operators =
             {
@@ -50,7 +46,7 @@ namespace SuperHighlight.Exporters
                 '|', '^', '~', ','
             };
 
-            if (ch == ' ')
+            if (ch == ' ' || ch == '\r' || ch == '\n' || ch == '\t')
             {
                 return 0;
             }
@@ -85,30 +81,15 @@ namespace SuperHighlight.Exporters
                 return 6;
             }
 
-            if (ch == '\r')
-            {
-                return 7;
-            }
-
-            if (ch == '\n')
-            {
-                return 8;
-            }
-
-            if (ch == '\t')
-            {
-                return 9;
-            }
-
             return 10;
         }
 
         /// <summary>
-        /// 识别匹配python代码，输出已编码的content
+        /// 识别匹配python代码，返回已编码的content
         /// </summary>
-        /// <param name="InputFilePath">原python文件路径</param>
+        /// <param name="InputFilePath">输入python文件路径</param>
         /// <returns>已编码的content</returns>
-        private string Export(string InputFilePath)
+        static string Export(string InputFilePath)
         {
             string[] keywords =
                 { "False", "None", "True", "and", "as", "assert", "break", "class",
@@ -144,7 +125,7 @@ namespace SuperHighlight.Exporters
                 {
                     flag = Recognize(char_array[index]);
 
-                    if (flag == 0 || flag == 7 || flag == 8 || flag == 9)
+                    if (flag == 0)
                     {
                         //writer.Write(char_array[index]);
                         content += char_array[index];
@@ -152,141 +133,146 @@ namespace SuperHighlight.Exporters
                         continue;
                     }
 
-                    _flag = flag == 1 ? flag : _flag;
-                    _flag = flag == 2 ? flag : _flag;
-                    _flag = flag == 3 ? flag : _flag;
-                    _flag = flag == 4 ? flag : _flag;
-                    _flag = flag == 5 ? flag : _flag;
-                    _flag = flag == 6 ? flag : _flag;
+                    _flag = flag;
 
-                    if (_flag == 1)
+                    switch (_flag)
                     {
-                        while (char_array[index] != '\n')
-                        {
-                            temp += char_array[index];
-
-                            index++;
-                        }
-
-                        //writer.Write("<span class=\"sc1\">" + temp + "</span>");
-                        content += "<span class=\"sc1\">" + temp + "</span>";
-                        temp = string.Empty;
-                        _flag = 0;
-                        index--;
-                        //continue;
-                    }
-
-                    if (_flag == 2)
-                    {
-                        int total = Recognize(char_array[index + 1]) == flag && Recognize(char_array[index + 2]) == flag ? 6 : 2;
-                        int count = 0;
-
-                        while (count < total)
-                        {
-                            temp += char_array[index];
-
-                            if (char_array[index] == '\"')
+                        case 1:
                             {
-                                count++;
+                                while (char_array[index] != '\n')
+                                {
+                                    temp += char_array[index];
+
+                                    index++;
+                                }
+
+                                content += "<span class=\"sc1\">" + temp + "</span>";
+                                temp = string.Empty;
+                                _flag = 0;
+                                index--;
                             }
-                            index++;
-                        }
+                            break;
 
-                        //writer.Write("<span class=\"sc3\">" + temp + "</span>");
-                        content += "<span class=\"sc3\">" + temp + "</span>";
-                        temp = string.Empty;
-                        _flag = 0;
-                        index--;
-                        //continue;
-                    }
-
-                    if (_flag == 3)
-                    {
-                        int total = Recognize(char_array[index + 1]) == flag && Recognize(char_array[index + 2]) == flag ? 6 : 2;
-                        int count = 0;
-
-                        while (count < total)
-                        {
-                            temp += char_array[index];
-
-                            if (char_array[index] == '\'')
+                        case 2:
                             {
-                                count++;
+                                int total = Recognize(char_array[index + 1]) == flag && Recognize(char_array[index + 2]) == flag ? 6 : 2;
+                                int count = 0;
+
+                                while (count < total)
+                                {
+                                    temp += char_array[index];
+
+                                    if (char_array[index] == '\"')
+                                    {
+                                        count++;
+                                    }
+                                    index++;
+                                }
+
+                                //writer.Write("<span class=\"sc3\">" + temp + "</span>");
+                                content += "<span class=\"sc3\">" + temp + "</span>";
+                                temp = string.Empty;
+                                _flag = 0;
+                                index--;
+                                //continue;
                             }
-                            index++;
-                        }
+                            break;
 
-                        //writer.Write("<span class=\"sc4\">" + temp + "</span>");
-                        content += "<span class=\"sc4\">" + temp + "</span>";
-                        temp = string.Empty;
-                        _flag = 0;
-                        index--;
-                        //continue;
-                    }
+                        case 3:
+                            {
+                                int total = Recognize(char_array[index + 1]) == flag && Recognize(char_array[index + 2]) == flag ? 6 : 2;
+                                int count = 0;
 
-                    if (_flag == 4)
-                    {
-                        do
-                        {
-                            temp += char_array[index];
+                                while (count < total)
+                                {
+                                    temp += char_array[index];
 
-                            index++;
-                            flag = Recognize(char_array[index]);
+                                    if (char_array[index] == '\'')
+                                    {
+                                        count++;
+                                    }
+                                    index++;
+                                }
 
-                        } while (flag == 4 || flag == 5);
+                                //writer.Write("<span class=\"sc4\">" + temp + "</span>");
+                                content += "<span class=\"sc4\">" + temp + "</span>";
+                                temp = string.Empty;
+                                _flag = 0;
+                                index--;
+                                //continue;
+                            }
+                            break;
 
-                        if (keywords.Contains(temp))
-                        {
-                            //writer.Write("<span class=\"sc5\">" + temp + "</span>");
-                            content += "<span class=\"sc5\">" + temp + "</span>";
-                        }
-                        else
-                        {
-                            //writer.Write("<span class=\"sc0\">" + temp + "</span>");
-                            content += "<span class=\"sc0\">" + temp + "</span>";
-                        }
+                        case 4:
+                            {
+                                do
+                                {
+                                    temp += char_array[index];
 
-                        temp = string.Empty;
-                        _flag = 0;
-                        index--;
-                    }
+                                    index++;
+                                    flag = Recognize(char_array[index]);
 
-                    if (_flag == 5)
-                    {
-                        do
-                        {
-                            temp += char_array[index];
+                                } while (flag == 4 || flag == 5);
 
-                            index++;
-                            flag = Recognize(char_array[index]);
+                                if (keywords.Contains(temp))
+                                {
+                                    //writer.Write("<span class=\"sc5\">" + temp + "</span>");
+                                    content += "<span class=\"sc5\">" + temp + "</span>";
+                                }
+                                else
+                                {
+                                    //writer.Write("<span class=\"sc0\">" + temp + "</span>");
+                                    content += "<span class=\"sc0\">" + temp + "</span>";
+                                }
 
-                        } while (flag == 5);
+                                temp = string.Empty;
+                                _flag = 0;
+                                index--;
+                            }
+                            break;
 
-                        //writer.Write("<span class=\"sc2\">" + temp + "</span>");
-                        content += "<span class=\"sc2\">" + temp + "</span>";
+                        case 5:
+                            {
+                                do
+                                {
+                                    temp += char_array[index];
 
-                        temp = string.Empty;
-                        _flag = 0;
-                        index--;
-                    }
+                                    index++;
+                                    flag = Recognize(char_array[index]);
 
-                    if (_flag == 6)
-                    {
-                        do
-                        {
-                            temp += char_array[index];
+                                } while (flag == 5);
 
-                            index++;
-                            flag = Recognize(char_array[index]);
+                                //writer.Write("<span class=\"sc2\">" + temp + "</span>");
+                                content += "<span class=\"sc2\">" + temp + "</span>";
 
-                        } while (flag == 6);
+                                temp = string.Empty;
+                                _flag = 0;
+                                index--;
+                            }
+                            break;
 
-                        //writer.Write("<span class=\"sc10\">" + temp + "</span>");
-                        content += "<span class=\"sc10\">" + temp + "</span>";
+                        case 6:
+                            {
+                                do
+                                {
+                                    temp += char_array[index];
 
-                        temp = string.Empty;
-                        _flag = 0;
-                        index--;
+                                    index++;
+                                    flag = Recognize(char_array[index]);
+
+                                } while (flag == 6);
+
+                                //writer.Write("<span class=\"sc10\">" + temp + "</span>");
+                                content += "<span class=\"sc10\">" + temp + "</span>";
+
+                                temp = string.Empty;
+                                _flag = 0;
+                                index--;
+                            }
+                            break;
+
+                        default:
+                            break;
                     }
 
                     index++;
@@ -300,7 +286,6 @@ namespace SuperHighlight.Exporters
 
             return content;
         }
-
     }
 }
 
