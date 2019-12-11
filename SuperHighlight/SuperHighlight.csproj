@@ -61,6 +61,7 @@
     </ApplicationDefinition>
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Controls\ComboBoxWithCommand.cs" />
+    <Compile Include="Exporters\CppExporter.cs" />
     <Compile Include="Exporters\JavaExporter.cs" />
     <Compile Include="Exporters\PythonExporter.cs" />
     <Compile Include="Exporters\ToHtml.cs" />
