@@ -137,7 +137,7 @@ namespace SuperHighlight.ViewModels
                     FileInformation temp;
                     //遍历文件夹
                     DirectoryInfo theFolder = new DirectoryInfo(InputFolderPath);
-                    FileInfo[] thefileInfo = theFolder.GetFiles("*.py", SearchOption.TopDirectoryOnly);
+                    FileInfo[] thefileInfo = theFolder.GetFiles("*.cpp", SearchOption.TopDirectoryOnly);
                     foreach (FileInfo NextFile in thefileInfo) //遍历文件
                     {
                         temp = new FileInformation
@@ -279,6 +279,21 @@ namespace SuperHighlight.ViewModels
                     {
                         dic["title"] = file.FileName;
                         pythonExporter.PythonToHtml(file.FullPath + "\\" + file.FileName, OutputFolderPath, file.FileName + ".html", dic);
+                    }
+                }
+
+            }
+
+            if (SelectedLanguage == "C++")
+            {
+                CppExporter cppExporter = new CppExporter();
+
+                foreach (var file in FileList)
+                {
+                    if (file.Selected)
+                    {
+                        dic["title"] = file.FileName;
+                        cppExporter.CppToHtml(file.FullPath + "\\" + file.FileName, OutputFolderPath, file.FileName + ".html", dic);
                     }
                 }
 

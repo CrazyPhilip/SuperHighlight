@@ -5,6 +5,7 @@
     <Language Name="Java" Version="8"/>
     <Language Name="C#" Version="8.0"/>
     <Language Name="PHP" Version="7.0"/>
+    <Language Name="C++" Version="7.0"/>
   </Languages>
 
   <Themes>

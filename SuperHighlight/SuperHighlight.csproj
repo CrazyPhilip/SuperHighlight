@@ -128,6 +128,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Themes\C++_Dark_template.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Themes\Python_Dark_template.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

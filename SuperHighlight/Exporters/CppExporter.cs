@@ -297,6 +297,7 @@ namespace SuperHighlight.Exporters
                             {
 
                             }
+                            break;
 
                         default:
                             break;
