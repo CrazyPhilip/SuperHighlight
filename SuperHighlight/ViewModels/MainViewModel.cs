@@ -271,6 +271,10 @@ namespace SuperHighlight.ViewModels
 
             if (SelectedLanguage == "Python")
             {
+                ProgressWindow progressWindow = new ProgressWindow();
+
+                progressWindow.Show();
+                /*
                 PythonExporter pythonExporter = new PythonExporter();
 
                 foreach (var file in FileList)
@@ -280,7 +284,7 @@ namespace SuperHighlight.ViewModels
                         dic["title"] = file.FileName;
                         pythonExporter.PythonToHtml(file.FullPath + "\\" + file.FileName, OutputFolderPath, file.FileName + ".html", dic);
                     }
-                }
+                }*/
 
             }
 
