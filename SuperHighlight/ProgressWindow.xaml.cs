@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using SuperHighlight.Models;
 using SuperHighlight.ViewModels;
 
 namespace SuperHighlight
@@ -20,11 +21,13 @@ namespace SuperHighlight
     /// </summary>
     public partial class ProgressWindow : Window
     {
-        public ProgressViewModel progressViewModel = new ProgressViewModel();
+        public ProgressViewModel progressViewModel;
 
-        public ProgressWindow()
+        public ProgressWindow(string SelectedLanguage, string SelectedFont, string SelectedFontSize, string SelectedTheme, string OutputFolderPath, List<FileInformation> FileList)
         {
             InitializeComponent();
+
+            progressViewModel = new ProgressViewModel(SelectedLanguage, SelectedFont, SelectedFontSize.ToString(), SelectedTheme, OutputFolderPath, FileList);
 
             DataContext = progressViewModel;
         }
