@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Configuration>
   <Languages>
-    <Language Name="Python" Version="3.6"/>
-    <Language Name="Java" Version="8"/>
-    <Language Name="C#" Version="8.0"/>
-    <Language Name="PHP" Version="7.0"/>
-    <Language Name="C++" Version="7.0"/>
+    <Language Name="Python" Version="3.6" Extension=".py"/>
+    <Language Name="Java" Version="8" Extension=".java"/>
+    <Language Name="C#" Version="8.0" Extension=".cs"/>
+    <Language Name="PHP" Version="7.0" Extension=".php"/>
+    <Language Name="C++" Version="7.0" Extension=".cpp"/>
   </Languages>
 
   <Themes>

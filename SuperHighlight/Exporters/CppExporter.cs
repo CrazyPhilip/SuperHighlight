@@ -10,14 +10,13 @@ namespace SuperHighlight.Exporters
 {
     public class CppExporter
     {
-        
-        public int CppToHtml(string InputFilePath, string OutputFilePath, string OutputFileName, Dictionary<string, string> dic)
+        public int Export(string InputFilePath, string OutputFilePath, string OutputFileName, Dictionary<string, string> dic)
         {
             string template_path = Application.StartupPath + "\\Themes\\" + dic["language"] + "_" + dic["theme"] + "_template.html";
             ToHtml html = new ToHtml();
             string msg = "";
 
-            dic["content"] = Export(InputFilePath);
+            dic["content"] = Generate(InputFilePath);
 
             html.Create(template_path, OutputFilePath, OutputFileName, dic, ref msg);
 
@@ -86,7 +85,7 @@ namespace SuperHighlight.Exporters
             return 10;
         }
 
-        private string Export(string InputFilePath)
+        private string Generate(string InputFilePath)
         {
             string[] keywords =
             {

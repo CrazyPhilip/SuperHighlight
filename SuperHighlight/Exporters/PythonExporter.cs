@@ -16,14 +16,14 @@ namespace SuperHighlight.Exporters
         /// <param name="InputFilePath">Python文件全路径</param>
         /// <param name="OutputFilePath">输出Html文件全路径</param>
         /// <returns></returns>
-        public int PythonToHtml(string InputFilePath, string OutputFilePath, string OutputFileName, Dictionary<string, string> dic)
+        public int Export(string InputFilePath, string OutputFilePath, string OutputFileName, Dictionary<string, string> dic)
         {
             string template_path = Application.StartupPath + "\\Themes\\" + dic["language"] + "_" + dic["theme"] + "_template.html";
             ToHtml html = new ToHtml();
             string msg = "";
 
             //dic.Add("content", Export(InputFilePath));
-            dic["content"] = Export(InputFilePath);
+            dic["content"] = Generate(InputFilePath);
 
             html.Create(template_path, OutputFilePath, OutputFileName, dic, ref msg);
 
@@ -89,7 +89,7 @@ namespace SuperHighlight.Exporters
         /// </summary>
         /// <param name="InputFilePath">输入python文件路径</param>
         /// <returns>已编码的content</returns>
-        private string Export(string InputFilePath)
+        private string Generate(string InputFilePath)
         {
             string[] keywords =
                 { "False", "None", "True", "and", "as", "assert", "break", "class",

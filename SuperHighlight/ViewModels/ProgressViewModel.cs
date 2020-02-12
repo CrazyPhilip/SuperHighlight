@@ -3,6 +3,7 @@ using SuperHighlight.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,8 +19,19 @@ namespace SuperHighlight.ViewModels
             set { SetProperty(ref rate, value); }
         }
 
+        private Thread thread;
+
         public ProgressViewModel(string SelectedLanguage, string SelectedFont, string SelectedFontSize, string SelectedTheme, string OutputFolderPath, List<FileInformation> FileList)
         {
+            Dictionary<string, string> exporters = new Dictionary<string, string>
+            {
+                { "Python", "PythonExporter"},
+                { "Java", "JavaExporter"},
+                { "C#", "CsharpExporter"},
+                { "PHP", "PhpExporter"},
+                { "C++", "CppExporter"}
+            };
+
             Dictionary<string, string> dic = new Dictionary<string, string>
             {
                 { "language", SelectedLanguage},
@@ -30,15 +42,13 @@ namespace SuperHighlight.ViewModels
                 { "content", ""}
             };
 
-            Thread thread = new Thread(new ThreadStart(() =>
+            //新建一个线程
+            thread = new Thread(new ThreadStart(() =>
             {
-                //for (int i = 0; i <= 100; i++)
-                //{
-                //    //this.progressBar1.Dispatcher.BeginInvoke((ThreadStart)delegate { this.progressBar1.Value = i; });
-                //    Rate = i;
-                //    Thread.Sleep(100);
-                //}
-                PythonExporter pythonExporter = new PythonExporter();
+                //动态实例化exporter，根据选择的语言实例化对应的exporter
+                Type type = Type.GetType("SuperHighlight.Exporters." + exporters[SelectedLanguage]);
+                var exporter = Activator.CreateInstance(type);
+                MethodInfo method = type.GetMethod("Export", new Type[] { typeof(string), typeof(string), typeof(string), typeof(Dictionary<string, string>)});
                 int index = 0;
 
                 foreach (var file in FileList)
@@ -46,7 +56,7 @@ namespace SuperHighlight.ViewModels
                     if (file.Selected)
                     {
                         dic["title"] = file.FileName;
-                        pythonExporter.PythonToHtml(file.FullPath + "\\" + file.FileName, OutputFolderPath, file.FileName + ".html", dic);
+                        method.Invoke(exporter, new object[] { file.FullPath + "\\" + file.FileName, OutputFolderPath, file.FileName + ".html", dic });
                     }
 
                     index++;
@@ -54,6 +64,11 @@ namespace SuperHighlight.ViewModels
                 }
             }));
             thread.Start();
+        }
+
+        ~ProgressViewModel()
+        {
+            thread.Abort();
         }
     }
 }

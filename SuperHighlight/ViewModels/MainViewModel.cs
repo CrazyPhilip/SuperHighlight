@@ -96,20 +96,22 @@ namespace SuperHighlight.ViewModels
             set { SetProperty(ref outputFolderPath, value); }
         }
 
+        private Dictionary<string, string> FilenameExtensionDic = new Dictionary<string, string>();
+
         [DllImport("shell32.dll")]
         static extern IntPtr ShellExecute( IntPtr hwnd, string lpOperation, string lpFile, string lpParameters, string lpDirectory, int nShowCmd);
 
-        public Command InputFolderCommand { get; private set; }
+        public Command InputFolderCommand { get; private set; }  //选择输入文件夹
 
-        public Command OutputFolderCommand { get; private set; }
+        public Command OutputFolderCommand { get; private set; }  //选择输出文件夹
 
-        public Command OpenInputFolderCommand { get; private set; }
+        public Command OpenInputFolderCommand { get; private set; }  //打开输入文件夹
 
-        public Command OpenOutputFolderCommand { get; private set; }
+        public Command OpenOutputFolderCommand { get; private set; }  //打开输出文件夹
 
-        public Command GenerateCommand { get; private set; }
+        public Command GenerateCommand { get; private set; }  //生成
 
-        public Command SelectThemeCommand { get; private set; }
+        public Command SelectThemeCommand { get; private set; }  //选择主题
 
         public MainViewModel()
         {
@@ -137,7 +139,7 @@ namespace SuperHighlight.ViewModels
                     FileInformation temp;
                     //遍历文件夹
                     DirectoryInfo theFolder = new DirectoryInfo(InputFolderPath);
-                    FileInfo[] thefileInfo = theFolder.GetFiles("*.py", SearchOption.TopDirectoryOnly);
+                    FileInfo[] thefileInfo = theFolder.GetFiles("*" + FilenameExtensionDic[SelectedLanguage], SearchOption.TopDirectoryOnly);
                     foreach (FileInfo NextFile in thefileInfo) //遍历文件
                     {
                         temp = new FileInformation
@@ -202,13 +204,13 @@ namespace SuperHighlight.ViewModels
 
             GenerateCommand = new Command(() =>
             {
-                Distribute();
+                ProgressWindow progressWindow = new ProgressWindow(SelectedLanguage, SelectedFont, SelectedFontSize.ToString(), SelectedTheme, OutputFolderPath, FileList);
+                progressWindow.Show();
             }, () => { return true; });
 
             SelectThemeCommand = new Command(() =>
             {
                 ThemeImage = "/Themes/" + SelectedLanguage + "_" + SelectedTheme + ".PNG";
-                //Console.WriteLine(ThemeImage);
             }, () => { return true; });
         }
 
@@ -225,6 +227,7 @@ namespace SuperHighlight.ViewModels
                     foreach (XmlNode item in languageList)
                     {
                         LanguageList.Add(item.Attributes["Name"].Value);
+                        FilenameExtensionDic.Add(item.Attributes["Name"].Value, item.Attributes["Extension"].Value);
                     }
                 }
 
@@ -257,49 +260,5 @@ namespace SuperHighlight.ViewModels
             }
         }
 
-        private void Distribute()
-        {
-            Dictionary<string, string> dic = new Dictionary<string, string>
-            {
-                { "language", SelectedLanguage},
-                { "title", ""},
-                { "font", SelectedFont},
-                { "fontsize", SelectedFontSize.ToString()},
-                { "theme", SelectedTheme},
-                { "content", ""}
-            };
-
-            if (SelectedLanguage == "Python")
-            {
-                //PythonExporter pythonExporter = new PythonExporter();
-
-                //foreach (var file in FileList)
-                //{
-                //    if (file.Selected)
-                //    {
-                //        dic["title"] = file.FileName;
-                //        //pythonExporter.PythonToHtml(file.FullPath + "\\" + file.FileName, OutputFolderPath, file.FileName + ".html", dic);
-                //    }
-                //}
-
-                ProgressWindow progressWindow = new ProgressWindow(SelectedLanguage, SelectedFont, SelectedFontSize.ToString(), SelectedTheme, OutputFolderPath, FileList);
-                progressWindow.Show();
-            }
-
-            if (SelectedLanguage == "C++")
-            {
-                CppExporter cppExporter = new CppExporter();
-
-                foreach (var file in FileList)
-                {
-                    if (file.Selected)
-                    {
-                        dic["title"] = file.FileName;
-                        cppExporter.CppToHtml(file.FullPath + "\\" + file.FileName, OutputFolderPath, file.FileName + ".html", dic);
-                    }
-                }
-
-            }
-        }
     }
 }
